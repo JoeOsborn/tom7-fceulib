@@ -18,28 +18,32 @@ FLTO=
 ARCH=-m64
 # ARCH=-m32
 
-ifdef OSX
-CXX=g++
-CC=gcc
+# Thanks to http://stackoverflow.com/a/14777895
+ifeq ($(OS),Windows_NT)
+    uname_S := Windows
 else
-ifdef LINUX
-CXX=g++
-CC=gcc
-PLATFORMLINK=-lpthread -static
-else
-# for 64 bits on windows
-# CXX=x86_64-w64-mingw32-g++
-# CC=x86_64-w64-mingw32-g++
-
-# to use TDM:
-# export PATH=/c/TDM-GCC-64/bin:$PATH
-CXX=g++
-CC=g++
-
-PLATFORMCFLAGS= -D__MINGW32__ -D_GLIBCXX_HAS_GTHREADS -mthreads
-# without static, can't find lz or lstdcxx maybe?
-PLATFORMLINK=-mthreads -Wl,--subsystem,console -lwinpthread -L. -static
+    uname_S := $(shell uname -s)
 endif
+
+ifeq ($(uname_S), Windows)
+  # for 64 bits on windows
+  # CXX=x86_64-w64-mingw32-g++
+  # CC=x86_64-w64-mingw32-g++
+
+  # to use TDM:
+  # export PATH=/c/TDM-GCC-64/bin:$PATH
+  CXX=g++
+  CC=g++
+
+  PLATFORMCFLAGS= -D__MINGW32__ -D_GLIBCXX_HAS_GTHREADS -mthreads
+  # without static, can't find lz or lstdcxx maybe?
+  PLATFORMLINK=-mthreads -Wl,--subsystem,console -lwinpthread -L. -static
+else
+  CXX=g++
+  CC=gcc
+  ifeq ($(uname_S), Linux)
+    PLATFORMLINK=-lpthread -static
+  endif
 endif
 
 # Suppress compilation commands, but show some indication of progress.
@@ -153,7 +157,13 @@ test : emulator_test.exe
 	time ./emulator_test.exe
 
 clean :
-	rm -f *_test.exe bench.exe difftrace.exe *.o $(EMUOBJECTS) $(CCLIBOBJECTS) gmon.out
+	rm -f *_test.exe bench.exe difftrace.exe *.o $(EMUOBJECTS) $(CCLIBOBJECTS) gmon.out fceulib.so
 
 veryclean : clean
 	rm -f trace.bin
+
+# requires pybind11 in a system include path.
+fceulib.so : $(OBJECTS) simplefm2.o pybind.cc
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -std=c++11 `python-config --cflags --ldflags` $^ -o fceulib.so $(LFLAGS)
+
+bind : fceulib.so

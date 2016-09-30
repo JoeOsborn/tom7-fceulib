@@ -1,0 +1,16 @@
+*.o
+*.exe
+*.pyc
+/.svn/entries
+/.svn/format
+/.svn/pristine/00/0075ef62a5c817890229f87adbc4e28cdd1961bf.svn-base
+/collage-0.png
+/comprehensive.txt
+*.nes
+*.so
+*.dSYM
+/pybind11/
+/run.png
+/.dir-locals.el
+/.projectile
+/.svn/pristine/00/008e86b97ca064a4b0ca964fac8f82ef4c0c9bae.svn-base

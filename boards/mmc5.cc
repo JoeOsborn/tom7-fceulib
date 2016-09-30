@@ -32,7 +32,7 @@ struct CartData {
 };
 }
 
-static constexpr std::initializer_list<CartData> MMC5CartList = {
+static const std::initializer_list<CartData> MMC5CartList = {
   {0x9c18762b, 2}, /* L'Empereur */
   {0x26533405, 2},
   {0x6396b988, 2},
