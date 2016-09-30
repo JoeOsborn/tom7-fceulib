@@ -28,7 +28,7 @@ public:
     ptr(const_cast<uint8*>(ptr)),
     sz(sz)
   {};
-  SharedByteArray(uint8* ptr, size_t sz = 0) 
+  SharedByteArray(uint8* ptr, size_t sz = 0) :
     ptr(ptr),
     sz(sz)
   {};
@@ -76,7 +76,7 @@ PYBIND11_PLUGIN(fceulib) {
             s[i] = v;
         })
        .def("__len__", &SharedByteArray::safeSize)
-             //TODO: get a slice into a Python bytearray
+      //TODO: get a slice into a Python bytearray
       //.def("set", &SharedByteArray::set)
       //TODO: buffer interface for converting _from_, at least.
       ;
