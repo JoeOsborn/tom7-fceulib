@@ -15,8 +15,8 @@ int add(int i, int j) {
 
 namespace py = pybind11;
 
-//PYBIND11_MAKE_OPAQUE(std::vector<uint8>);
-//PYBIND11_MAKE_OPAQUE(std::vector<int16>);
+PYBIND11_MAKE_OPAQUE(std::vector<uint8>);
+PYBIND11_MAKE_OPAQUE(std::vector<int16>);
 
 PYBIND11_MAKE_OPAQUE(uint8*);
 
@@ -28,7 +28,7 @@ public:
     ptr(const_cast<uint8*>(ptr)),
     sz(sz)
   {};
-  SharedByteArray(uint8* ptr, size_t sz = 0) :
+  SharedByteArray(uint8* ptr, size_t sz = 0) 
     ptr(ptr),
     sz(sz)
   {};
