@@ -42,7 +42,7 @@ else
   CXX=g++
   CC=gcc
   ifeq ($(uname_S), Linux)
-    PLATFORMLINK=-lpthread -static
+    PLATFORMLINK=-lpthread -static -fPIC
   endif
 endif
 
