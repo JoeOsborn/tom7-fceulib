@@ -39,10 +39,11 @@ ifeq ($(uname_S), Windows)
   # without static, can't find lz or lstdcxx maybe?
   PLATFORMLINK=-mthreads -Wl,--subsystem,console -lwinpthread -L. -static
 else
-  CXX=g++
-  CC=gcc
+  CXX=g++ 
+  CC=gcc	
   ifeq ($(uname_S), Linux)
-    PLATFORMLINK=-lpthread -static -fPIC
+    PLATFORMCFLAGS=-fPIC
+    PLATFORMLINK=-lpthread -static 
   endif
 endif
 
@@ -164,6 +165,6 @@ veryclean : clean
 
 # requires pybind11 in a system include path.
 fceulib.so : $(OBJECTS) simplefm2.o pybind.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -std=c++11 `python-config --cflags --ldflags` $^ -o fceulib.so $(LFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -std=c++11 `python-config --cflags --ldflags` $(LFLAGS) $^ -o fceulib.so
 
 bind : fceulib.so
