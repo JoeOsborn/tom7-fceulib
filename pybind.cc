@@ -54,6 +54,7 @@ private:
 //ugh, macros, but I tried my best with templates.
 #define SBA(cls,fld,len) ([](const cls*___o) { return SharedByteArray(___o->fld, len); })
 #define SBA_(cls,fld) SBA(cls,fld,0)
+#define PREF(functor) py::cpp_function(functor,py::return_value_policy::reference)
 
 PYBIND11_PLUGIN(fceulib) {
     py::module m("fceulib", "Python wrapper for fceulib NES emulation");
@@ -97,7 +98,9 @@ PYBIND11_PLUGIN(fceulib) {
       .def("load", &Emulator::Load)
       .def("step", &Emulator::Step, "Bits for P1 and P2 input from most to least significant are R, L, D, U, Start, Select, B, A. Does not yield video.")
       .def("memoryInto", (void (Emulator::*)(vector<uint8>*)) &Emulator::GetMemory, "Get memory out into a buffer.")
-      .def_property_readonly("memory", (vector<uint8> (Emulator::*)(void)) &Emulator::GetMemory, "Copy and return system memory.")
+      .def_property_readonly("memory",
+                             (vector<uint8> (Emulator::*)(void)) &Emulator::GetMemory,
+                             "Copy and return system memory.")
       .def("stepFull", &Emulator::StepFull)
       .def("imageInto", (void (Emulator::*)(vector<uint8>*) const) &Emulator::GetImage, "Get image out into a buffer.")
       .def_property_readonly("image", (vector<uint8> (Emulator::*)(void) const) &Emulator::GetImage, "Copy and return current image.")
@@ -118,15 +121,15 @@ PYBIND11_PLUGIN(fceulib) {
       // //TODO
       // .def_property_readonly("rawIndexedImage", SBA(Emulator,RawIndexedImage,XXX), "Get raw indexed image to be masked against indexMask. Copy it if you want to call other emulator functions.")
       .def_property_readonly("indexedImage", &Emulator::IndexedImage, "Get pre-masked indexed image in a fresh buffer.")
-      .def_property_readonly("fc", (FC * (Emulator::*)(void)) &Emulator::GetFC, "Get the FC instance.")
+      .def_property_readonly("fc", PREF((FC * (Emulator::*)(void)) &Emulator::GetFC), "Get the FC instance.")
       ;
     //FC: readonly properties for cart, fceu, fds, filter, ines, input, palette, ppu, sound, unif, vsuni, x6502, state
     py::class_<FC>(m, "FC")
-      .def_readonly("cart", &FC::cart)
-      .def_readonly("fceu", &FC::fceu)
-      .def_readonly("input", &FC::input)
-      .def_readonly("palette", &FC::palette)
-      .def_readonly("ppu", &FC::ppu)
+      .def_readonly("cart", &FC::cart, py::return_value_policy::reference_internal)
+      .def_readonly("fceu", &FC::fceu, py::return_value_policy::reference_internal)
+      .def_readonly("input", &FC::input, py::return_value_policy::reference_internal)
+      .def_readonly("palette", &FC::palette, py::return_value_policy::reference_internal)
+      .def_readonly("ppu", &FC::ppu, py::return_value_policy::reference_internal)
       //...
       ;
     //PPU

@@ -41,8 +41,8 @@ ifeq ($(uname_S), Windows)
 else
   CXX=g++
   CC=gcc
-  PLATFORMCFLAGS=-fPIC
   ifeq ($(uname_S), Linux)
+    PLATFORMCFLAGS=-fPIC
     PLATFORMLINK=-lpthread -shared
   endif
 endif
@@ -165,6 +165,6 @@ veryclean : clean
 
 # requires pybind11 in a system include path.
 fceulib.so : $(OBJECTS) simplefm2.o pybind.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -std=c++11 `python-config --cflags --ldflags` $^ -o fceulib.so $(LFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -std=c++11 `python-config --cflags --ldflags` $(LFLAGS) $^ -o fceulib.so
 
 bind : fceulib.so

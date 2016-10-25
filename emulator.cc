@@ -321,7 +321,7 @@ void Emulator::GetSound(vector<int16> *wav) {
 }
 
 void Emulator::Save(vector<uint8> *out) {
-  SaveEx(out, nullptr);
+  SaveEx(nullptr,out);
 }
 
 void Emulator::GetBasis(vector<uint8> *out) {
@@ -453,11 +453,11 @@ void Emulator::LoadEx(const vector<uint8> *basis, const vector<uint8> &state) {
 
 // When compression is disabled, we ignore the basis (no point) and
 // don't store any size header. These functions become very simple.
-void Emulator::SaveEx(vector<uint8> *state, const vector<uint8> *basis) {
+void Emulator::SaveEx(const vector<uint8> *basis, vector<uint8> *state) {
   fc->state->FCEUSS_SaveRAW(out);
 }
 
-void Emulator::LoadEx(vector<uint8> *state, const vector<uint8> *basis) {
+void Emulator::LoadEx(const vector<uint8> *basis, vector<uint8> *state) {
   if (!fc->state->FCEUSS_LoadRAW(*state)) {
     fprintf(stderr, "Couldn't restore from state\n");
     abort();
