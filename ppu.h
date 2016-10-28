@@ -38,7 +38,6 @@ struct PPU {
   // and sprite ram.
   uint8 NTARAM[0x800] = {}, PALRAM[0x20] = {};
   uint8 SPRAM[0x100] = {};
-
   // X scroll offset within the first tile (0-7)
   uint8 GetXOffset() const { return XOffset; }
 
@@ -103,6 +102,7 @@ struct PPU {
   const std::vector<SFORMAT> &FCEUPPU_STATEINFO() {
     return stateinfo;
   }
+  uint32 FetchSprite(int n, int t);
 
  private:
   const std::vector<SFORMAT> stateinfo;

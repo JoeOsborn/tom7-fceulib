@@ -26,7 +26,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <iostream>
 #include <tuple>
 #include <utility>
 #include <string>
@@ -1050,6 +1050,68 @@ STATIC_ASSERT(sizeof (uint32) == 4, uint32_size);
 
 void PPU::DisableSpriteLimitation(int a) {
   maxsprites = a ? 64 : 8;
+}
+uint32 PPU::FetchSprite(int n,int t){
+
+  const uint8 P0 = PPU_values[0];
+
+  const SPR *spr = (SPR *)SPRAM+n;
+  // Sprite height; either 8 or 16. -tom7
+  const uint8 sprite_height = 8 + ((P0 & 0x20) >> 2);
+
+  // Number of sprites on this line (so far).
+  uint8 ns = 0;
+
+  
+  const int vofs = (unsigned int)(P0 & 0x8 & (((P0 & 0x20) ^ 0x20) >> 2)) << 9;
+
+  if (!PPU_hook) {
+
+    SPRB dst;
+    // made uint32 from uint -tom7
+    uint32 vadr =
+      Sprite16 ?
+      ((spr->no & 1) << 12) + ((spr->no & 0xFE) << 4) :
+      (spr->no << 4) + vofs;
+
+    if (spr->atr & V_FLIP) {
+      vadr += 7;
+      vadr -= t;
+      vadr += (P0 & 0x20) >> 1;
+      vadr -= t & 8;
+    } else {
+      vadr += t;
+      vadr += t & 8;
+    }
+
+    const uint8 *C = MMC5Hack ?
+      MMC5SPRVRAMADR(fc, vadr) : VRAMADR(fc, vadr);
+
+    return ppulut1[C[0]] | ppulut2[C[8]];
+  } else {
+    SPRB dst;
+
+
+    unsigned int vadr =
+      Sprite16 ?
+      ((spr->no&1)<<12) + ((spr->no&0xFE)<<4) :
+      (spr->no<<4) + vofs;
+
+    if (spr->atr & V_FLIP) {
+      vadr+=7;
+      vadr-=t;
+      vadr+=(P0&0x20)>>1;
+      vadr-=t&8;
+    } else {
+      vadr+=t;
+      vadr+=t&8;
+    }
+
+    const uint8 *C = MMC5Hack ?
+      MMC5SPRVRAMADR(fc, vadr) : VRAMADR(fc, vadr);
+    return ppulut1[C[0]] | ppulut2[C[8]];
+
+  }
 }
 
 // I believe this corresponds to the "internal operation" section of
