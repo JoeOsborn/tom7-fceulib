@@ -41,9 +41,9 @@ ifeq ($(uname_S), Windows)
 else
   CXX=g++ 
   CC=gcc	
+  PLATFORMCFLAGS= -fPIC
   ifeq ($(uname_S), Linux)
-    PLATFORMCFLAGS=-fPIC
-    PLATFORMLINK=-lpthread -static 
+    PLATFORMLINK=-lpthread -shared
   endif
 endif
 
