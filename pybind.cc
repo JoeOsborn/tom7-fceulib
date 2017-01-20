@@ -139,6 +139,8 @@ PYBIND11_PLUGIN(fceulib) {
       .def_property_readonly("PALRAM", SBA(PPU,PALRAM,0x20))
       .def_property_readonly("SPRAM", SBA(PPU,SPRAM,0x100))
       .def_property_readonly("xOffset", &PPU::GetXOffset)
+      .def_property_readonly("xScroll", &PPU::GetXScroll)
+      .def_property_readonly("yScroll", &PPU::GetXScroll)
       .def_property_readonly("tempAddr", &PPU::GetTempAddr)
       .def_property_readonly("values", SBA(PPU,PPU_values,4))
       //...
