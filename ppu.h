@@ -40,7 +40,8 @@ struct PPU {
   uint8 SPRAM[0x100] = {};
   // X scroll offset within the first tile (0-7)
   uint8 GetXOffset() const { return XOffset; }
-
+  uint8 GetXScroll() const { return last_x_scroll;}
+  uint8 GetYScroll() const { return last_y_scroll;}
   uint32 GetTempAddr() const { return TempAddr; }
 
   // PPU values are:
