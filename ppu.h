@@ -41,6 +41,13 @@ struct PPU {
   // X scroll offset within the first tile (0-7)
   uint8 GetXOffset() const { return XOffset; }
 
+  uint8 GetLastXScroll() const {
+    return last_x_scroll;
+  }
+  uint8 GetLastYScroll() const {
+    return last_y_scroll;
+  }
+  
   uint32 GetTempAddr() const { return TempAddr; }
 
   // PPU values are:
