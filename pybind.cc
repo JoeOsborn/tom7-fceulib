@@ -3,8 +3,9 @@
 
 #include "emulator.h"
 #include "input.h"
-#include "palette.h"
 #include "cart.h"
+#include "ines.h"
+#include "palette.h"
 #include "ppu.h"
 #include "fceu.h"
 #include "simplefm2.h"
@@ -126,12 +127,15 @@ PYBIND11_PLUGIN(fceulib) {
     //FC: readonly properties for cart, fceu, fds, filter, ines, input, palette, ppu, sound, unif, vsuni, x6502, state
     py::class_<FC>(m, "FC")
       .def_readonly("cart", &FC::cart, py::return_value_policy::reference_internal)
+      .def_readonly("rom", &FC::ines, py::return_value_policy::reference_internal)
       .def_readonly("fceu", &FC::fceu, py::return_value_policy::reference_internal)
       .def_readonly("input", &FC::input, py::return_value_policy::reference_internal)
       .def_readonly("palette", &FC::palette, py::return_value_policy::reference_internal)
       .def_readonly("ppu", &FC::ppu, py::return_value_policy::reference_internal)
       //...
       ;
+    py::class_<INes>(m, "INes")
+      .def_readonly("mirroring", &INes::iNESMirroring);
     //PPU
     ///spram, flags, state
     py::class_<PPU>(m, "PPU")
@@ -177,6 +181,8 @@ PYBIND11_PLUGIN(fceulib) {
     //Movie, via SimpleFM
     m.def("readInputs", &SimpleFM2::ReadInputs);
     m.def("readInputs2P", &SimpleFM2::ReadInputs2P);
+    m.def("writeInputs", &SimpleFM2::WriteInputs);
+    m.def("writeInputs2P", &SimpleFM2::WriteInputs2P);
     m.def("inputToString", &SimpleFM2::InputToString);
     //TODO: later, do the rest.
     return m.ptr();
