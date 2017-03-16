@@ -177,6 +177,8 @@ public:
   static DECLFR_RET CartBR(DECLFR_ARGS);
   static DECLFR_RET CartBROB(DECLFR_ARGS);
 
+  int mirror;
+
 private:
   bool PRGIsRAM[32] = { };  /* This page is/is not PRG RAM. */
 

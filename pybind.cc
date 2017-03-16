@@ -134,8 +134,6 @@ PYBIND11_PLUGIN(fceulib) {
       .def_readonly("ppu", &FC::ppu, py::return_value_policy::reference_internal)
       //...
       ;
-    py::class_<INes>(m, "INes")
-      .def_readonly("mirroring", &INes::iNESMirroring);
     //PPU
     ///spram, flags, state
     py::class_<PPU>(m, "PPU")
@@ -147,6 +145,7 @@ PYBIND11_PLUGIN(fceulib) {
       .def_property_readonly("yScroll", &PPU::GetXScroll)
       .def_property_readonly("tempAddr", &PPU::GetTempAddr)
       .def_property_readonly("values", SBA(PPU,PPU_values,4))
+      .def("getVNAPage", [](const PPU*c, uint32 A) { return SharedByteArray(c->vnapage[A]); }, "Get VNAPage pointer 0-3")
       //...
       ;
     //CART
@@ -161,6 +160,7 @@ PYBIND11_PLUGIN(fceulib) {
       //I think the safe size is 0x800-A, but I'm not sure.
       .def("getVPageChunk", [](const Cart*c, uint32 A) { return SharedByteArray(c->VPagePointer(A)); }, "Get VPage pointer at given offset")
       .def("setVPageChunk", [](Cart*c, uint32 A, SharedByteArray sba) { c->SetVPage(A,sba.ptr); }, "Assign a VPage pointer at given offset")
+      .def_property_readonly("mirroring", [](const Cart*c) { return c->mirror; })
       // .def_readonly("PRG", (uint8* (Cart::*)) &Cart::PRGptr)
       // .def_readonly("PRGSize", &Cart::PRGsize)
       // .def_readonly("CHR", (uint8* (Cart::*)) &Cart::CHRptr)

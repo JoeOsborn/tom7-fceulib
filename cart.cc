@@ -363,6 +363,7 @@ void Cart::setmirror(int t) {
     }
     fc->ppu->PPUNTARAM = 0xF;
   }
+  this->mirror = t;
 }
 
 void Cart::SetupCartMirroring(int m, int hard, uint8 *extra) {
@@ -375,6 +376,7 @@ void Cart::SetupCartMirroring(int m, int hard, uint8 *extra) {
     fc->ppu->vnapage[2] = extra;
     fc->ppu->vnapage[3] = extra + 0x400;
     fc->ppu->PPUNTARAM = 0xF;
+    this->mirror = m;
   }
   mirrorhard = hard;
 }
