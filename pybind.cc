@@ -180,7 +180,7 @@ PYBIND11_PLUGIN(fceulib) {
       ;
     //Movie, via SimpleFM
     m.def("readInputs", &SimpleFM2::ReadInputs);
-    m.def("readInputs2P", &SimpleFM2::ReadInputs2P);
+    m.def("readInputs2", &SimpleFM2::ReadInputs2);
     m.def("writeInputs", &SimpleFM2::WriteInputs);
     m.def("writeInputs2P", &SimpleFM2::WriteInputs2P);
     m.def("inputToString", &SimpleFM2::InputToString);

@@ -24,6 +24,7 @@ using namespace std;
 
 struct SimpleFM2 {
   static vector<uint8> ReadInputs(const string &filename);
+  static vector<uint8> ReadInputs2(const string &filename);
   static vector<pair<uint8, uint8>> ReadInputs2P(const string &filename);
 
   static void WriteInputs(const string &outputfile,

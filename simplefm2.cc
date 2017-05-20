@@ -14,6 +14,13 @@ vector<uint8> SimpleFM2::ReadInputs(const string &filename) {
   return ret;
 }
 
+vector<uint8> SimpleFM2::ReadInputs2(const string &filename) {
+  vector<pair<uint8, uint8>> twop = ReadInputs2P(filename);
+  vector<uint8> ret;
+  ret.reserve(twop.size());
+  for (const auto &p : twop) ret.push_back(p.second);
+  return ret;
+}
 vector<pair<uint8, uint8>> SimpleFM2::ReadInputs2P(const string &filename) {
   vector<string> contents = Util::ReadFileToLines(filename);
   vector<pair<uint8, uint8>> out;
