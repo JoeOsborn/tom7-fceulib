@@ -25,11 +25,11 @@ struct SharedByteArray {
 public:
   //TODO: a convenience for copying this would be nice.
 
-  SharedByteArray(uint8 const ptr[], size_t sz = 0) :
+  SharedByteArray(uint8 const ptr[], size_t sz) :
     ptr(const_cast<uint8*>(ptr)),
     sz(sz)
   {};
-  SharedByteArray(uint8* ptr, size_t sz = 0) :
+  SharedByteArray(uint8* ptr, size_t sz) :
     ptr(ptr),
     sz(sz)
   {};
@@ -48,13 +48,11 @@ public:
   const uint8* end() const { return ptr+sz; }
 
   uint8* ptr;
-private:
   size_t sz;
 };
 
 //ugh, macros, but I tried my best with templates.
 #define SBA(cls,fld,len) ([](const cls*___o) { return SharedByteArray(___o->fld, len); })
-#define SBA_(cls,fld) SBA(cls,fld,0)
 #define PREF(functor) py::cpp_function(functor,py::return_value_policy::reference)
 
 PYBIND11_PLUGIN(fceulib) {
@@ -63,25 +61,35 @@ PYBIND11_PLUGIN(fceulib) {
     py::bind_vector<std::vector<uint8>>(m, "VectorBytes");
     py::bind_vector<std::vector<int16>>(m, "VectorShorts");
 
-    py::class_<SharedByteArray>(m, "BytePointer")
+    py::class_<SharedByteArray>(m, "BytePointer", py::buffer_protocol())
       /// Bare bones interface
        .def("__getitem__", [](const SharedByteArray &s, size_t i) {
-           size_t safeSz = s.safeSize();
+           size_t safeSz = s.sz;
            if (safeSz && i >= safeSz)
              throw py::index_error();
            return s[i];
         })
       .def("__setitem__", [](SharedByteArray &s, size_t i, float v) {
-           size_t safeSz = s.safeSize();
+           size_t safeSz = s.sz;
            if (safeSz && i >= safeSz)
                 throw py::index_error();
             s[i] = v;
         })
        .def("__len__", &SharedByteArray::safeSize)
+       .def_buffer([](SharedByteArray &m) -> py::buffer_info {
+           return py::buffer_info(m.ptr,             /* Pointer to buffer */
+                                  sizeof(uint8),     /* Size of one scalar */
+                                  py::format_descriptor<uint8>::format(), /* Python struct-style format descriptor */
+                                  1,                                      /* Number of dimensions */
+                                  { m.sz },                       /* Buffer dimensions */
+                                  { sizeof(uint8) } /* Strides (in bytes) for each index */
+                                  );
+         })
       //TODO: get a slice into a Python bytearray
       //.def("set", &SharedByteArray::set)
       //TODO: buffer interface for converting _from_, at least.
       ;
+
        
 
     // m.attr("JOY_A") = py::int_(JOY_A);
@@ -92,7 +100,7 @@ PYBIND11_PLUGIN(fceulib) {
     // m.attr("JOY_DOWN") = py::int_(JOY_DOWN);
     // m.attr("JOY_LEFT") = py::int_(JOY_LEFT);
     // m.attr("JOY_RIGHT") = py::int_(JOY_RIGHT);
-
+    const int vnasz = 4096; // 4K pages?
     m.def("runGame", &Emulator::Create);
     py::class_<Emulator>(m, "Emulator")
       .def("save", &Emulator::Save)
@@ -145,7 +153,7 @@ PYBIND11_PLUGIN(fceulib) {
       .def_property_readonly("yScroll", &PPU::GetXScroll)
       .def_property_readonly("tempAddr", &PPU::GetTempAddr)
       .def_property_readonly("values", SBA(PPU,PPU_values,4))
-      .def("getVNAPage", [](const PPU*c, uint32 A) { return SharedByteArray(c->vnapage[A]); }, "Get VNAPage pointer 0-3")
+      .def("getVNAPage", [](const PPU*c, uint32 A) { return SharedByteArray(c->vnapage[A], vnasz); }, "Get VNAPage pointer 0-3")
       //...
       ;
     //CART
@@ -158,7 +166,7 @@ PYBIND11_PLUGIN(fceulib) {
       .def("writeVPageAddr", &Cart::WriteVPage)
       .def("readVPageAddr", &Cart::ReadVPage)
       //I think the safe size is 0x800-A, but I'm not sure.
-      .def("getVPageChunk", [](const Cart*c, uint32 A) { return SharedByteArray(c->VPagePointer(A)); }, "Get VPage pointer at given offset")
+      .def("getVPageChunk", [](const Cart*c, uint32 A) { return SharedByteArray(c->VPagePointer(A), vnasz); }, "Get VPage pointer at given offset")
       .def("setVPageChunk", [](Cart*c, uint32 A, SharedByteArray sba) { c->SetVPage(A,sba.ptr); }, "Assign a VPage pointer at given offset")
       .def_property_readonly("mirroring", [](const Cart*c) { return c->mirror; })
       // .def_readonly("PRG", (uint8* (Cart::*)) &Cart::PRGptr)
