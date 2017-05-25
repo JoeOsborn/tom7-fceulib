@@ -58,8 +58,8 @@ public:
 PYBIND11_PLUGIN(fceulib) {
     py::module m("fceulib", "Python wrapper for fceulib NES emulation");
 
-    py::bind_vector<std::vector<uint8>>(m, "VectorBytes");
-    py::bind_vector<std::vector<int16>>(m, "VectorShorts");
+    py::bind_vector<std::vector<uint8>>(m, "VectorBytes", py::buffer_protocol());
+    py::bind_vector<std::vector<int16>>(m, "VectorShorts", py::buffer_protocol());
 
     py::class_<SharedByteArray>(m, "BytePointer", py::buffer_protocol())
       /// Bare bones interface
